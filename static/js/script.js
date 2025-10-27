@@ -1,38 +1,95 @@
-async function fetchResult() {
-    const scholarno = document.getElementById('scholarno').value.trim();
-    const semester = parseInt(document.getElementById('semester').value);
-    const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = '';
+let allResults = [];
+
+async function fetchAllResults() {
+    const scholarno = document.getElementById("scholarno").value;
+    const resultDiv = document.getElementById("result");
+    const semesterSelectWrapper = document.getElementById("semesterSelectWrapper");
+    const semesterSelect = document.getElementById("semester");
 
     if (!scholarno) {
-        resultDiv.innerHTML = '<p class="error">Please enter a scholar number.</p>';
+        resultDiv.innerHTML = "<p>Please enter a Scholar Number.</p>";
         return;
     }
 
+    resultDiv.innerHTML = "<p>Fetching results...</p>";
+
     try {
-        const response = await fetch('/fetch-student-result', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ scholarno, semester })
+        const response = await fetch("http://127.0.0.1:5000/fetch-student-result", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ scholarno: scholarno, semester: 1 })
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            resultDiv.innerHTML = `<p class="error">Error: ${errorData.message || 'Unknown error'}</p>`;
+        if (!response.ok) throw new Error("Failed to fetch result.");
+
+        const data = await response.json();
+        if (!Array.isArray(data)) {
+            resultDiv.innerHTML = "<p>Invalid response from server.</p>";
             return;
         }
 
-        const data = await response.json();
-        let html = '<h3>Result Details:</h3><ul>';
-        for (const key in data) {
-            html += `<li><strong>${key}:</strong> ${data[key]}</li>`;
-        }
-        html += '</ul>';
-        resultDiv.innerHTML = html;
+        allResults = data;
+        semesterSelect.innerHTML = "";
+
+        data.forEach((res, idx) => {
+            const opt = document.createElement("option");
+            opt.value = idx;
+            opt.text = `Semester ${res.Semester}`;
+            semesterSelect.appendChild(opt);
+        });
+
+        semesterSelectWrapper.style.display = "block";
+        displaySemesterResult();
 
     } catch (err) {
-        resultDiv.innerHTML = `<p class="error">Error: ${err.message}</p>`;
+        resultDiv.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
     }
 }
+
+function displaySemesterResult() {
+    const resultDiv = document.getElementById("result");
+    const selectedIndex = document.getElementById("semester").value;
+    const res = allResults[selectedIndex];
+
+    if (!res) return;
+
+    resultDiv.innerHTML = `
+        <div><strong>Name:</strong> ${res.StudentName}</div>
+        <div><strong>Scholar No:</strong> ${res.ScholarNo}</div>
+        <div><strong>Semester:</strong> ${res.Semester}</div>
+        <div><strong>Result:</strong> ${res.Result}</div>
+        <div><strong>Obtained:</strong> ${res.ObtainGrandTotal}</div>
+        <div><strong>Total:</strong> ${res.MaxGrandTotal}</div>
+        <div><strong>SGPA:</strong> ${res.SGPA}</div>
+        <div><strong>CGPA:</strong> ${res.CGPA}</div>
+        <div><strong>Percentage:</strong> ${res.Percentage}</div>
+    `;
+}
+
+/* ---------- Theme Toggle ---------- */
+const themeToggle = document.getElementById("theme-toggle");
+const themeIcon = document.getElementById("theme-icon");
+
+function setTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+    themeIcon.textContent = theme === "dark" ? "☀️" : "🌙";
+}
+
+function toggleTheme() {
+    const current = localStorage.getItem("theme") || "system";
+    const next = current === "dark" ? "light" : "dark";
+    setTheme(next);
+}
+
+themeToggle.addEventListener("click", toggleTheme);
+
+(function initTheme() {
+    const saved = localStorage.getItem("theme") || "system";
+    if (saved === "system") {
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        setTheme(prefersDark ? "dark" : "light");
+    } else {
+        setTheme(saved);
+    }
+})();

@@ -7,24 +7,24 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <div class="theme-toggle" id="theme-toggle">
+        <span id="theme-icon">🌙</span>
+    </div>
+
     <div class="container">
-        <h2>Fetch Student Result</h2>
+        <div class="header">
+            <h2>MANIT Student Result</h2>
+        </div>
+
         <label for="scholarno">Scholar Number:</label>
         <input type="text" id="scholarno" placeholder="Enter Scholar Number">
 
-        <label for="semester">Semester:</label>
-        <select id="semester">
-            <option value="1">Semester 1</option>
-            <option value="2">Semester 2</option>
-            <option value="3">Semester 3</option>
-            <option value="4">Semester 4</option>
-            <option value="5">Semester 5</option>
-            <option value="6">Semester 6</option>
-            <option value="7">Semester 7</option>
-            <option value="8">Semester 8</option>
-        </select>
+        <button id="fetchBtn" onclick="fetchAllResults()">Get Result</button>
 
-        <button onclick="fetchResult()">Get Result</button>
+        <div id="semesterSelectWrapper" style="display: none;">
+            <label for="semester">Select Semester:</label>
+            <select id="semester" onchange="displaySemesterResult()"></select>
+        </div>
 
         <div class="result" id="result"></div>
     </div>

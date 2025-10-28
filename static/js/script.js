@@ -45,14 +45,12 @@ async function fetchAllResults() {
         resultDiv.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
     }
 }
-
 function displaySemesterResult() {
     const resultDiv = document.getElementById("result");
     const selectedIndex = document.getElementById("semester").value;
     const res = allResults[selectedIndex];
 
     if (!res) return;
-
     resultDiv.innerHTML = `
         <div><strong>Name:</strong> ${res.StudentName}</div>
         <div><strong>Scholar No:</strong> ${res.ScholarNo}</div>
@@ -63,8 +61,23 @@ function displaySemesterResult() {
         <div><strong>SGPA:</strong> ${res.SGPA}</div>
         <div><strong>CGPA:</strong> ${res.CGPA}</div>
         <div><strong>Percentage:</strong> ${res.Percentage}</div>
-    `;
+        <br>
+        <button onclick="viewPDF(${res.Id})">View PDF</button>
+        <button onclick="downloadPDF(${res.Id})">Download PDF</button>
+`;
 }
+
+function viewPDF(id) {
+    window.open(`https://college-result-1phb.onrender.com/fetch-pdf/${id}`, '_blank');
+}
+
+function downloadPDF(id) {
+    const a = document.createElement('a');
+    a.href = `https://college-result-1phb.onrender.com/fetch-pdf/${id}`;
+    a.download = `Marksheet_${id}.pdf`;
+    a.click();
+}
+
 
 /* ---------- Theme Toggle ---------- */
 const themeToggle = document.getElementById("theme-toggle");
@@ -93,3 +106,4 @@ themeToggle.addEventListener("click", toggleTheme);
         setTheme(saved);
     }
 })();
+

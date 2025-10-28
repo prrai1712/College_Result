@@ -53,6 +53,21 @@ def fetch_student_result():
 
     except Exception as e:
         return jsonify({"error": "Internal server error", "message": str(e)}), 500
+    
+@app.route('/fetch-pdf/<int:id>')
+def fetch_pdf(id):
+    try:
+        url = f"https://academic.manit.ac.in/api/StudentActivity/GetMarkSheetPdf?Id={id}"
+        headers = {"User-Agent": "Mozilla/5.0"}
+        cookies = {
+            "ASP.NET_SessionId": "nnaealoizmtpmc2da2zvbtxs",
+            "StudentPanel": "userid=16362&Email=211112055&ScholarNo=211112055"
+        }
+        r = requests.get(url, headers=headers, cookies=cookies, verify=False)
+        return Response(r.content, content_type='application/pdf')
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 # ----------------- Run App -----------------
 if __name__ == '__main__':

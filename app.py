@@ -5,7 +5,7 @@ from flask_cors import CORS
 import json
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": ["https://college-result-796w.onrender.com"]}})
 
 # ----------------- Backend functions -----------------
 def get_student_data(scholarno):

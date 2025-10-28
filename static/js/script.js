@@ -14,7 +14,7 @@ async function fetchAllResults() {
     resultDiv.innerHTML = "<p>Fetching results...</p>";
 
     try {
-        const response = await fetch("http://127.0.0.1:5000/fetch-student-result", {
+        const response = await fetch("https://college-result-796w.onrender.com/fetch-student-result", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ scholarno: scholarno, semester: 1 })
